@@ -1,10 +1,34 @@
 ReaperNRT {
   classvar <args, <paths, <server, <outFileName, <inputFile;
+
   *new {
-    ^super.new.init();
+    ^super.new.prInit();
   }
 
-  *init {
+  *synthFunc{
+    ^{|dustFreq=10|
+      var in = SoundIn.ar([0]),
+      fft = FFT(LocalBuf(1024, 1), in);
+      fft = PV_MagFreeze(fft, ToggleFF.kr(Dust.kr(dustFreq)));
+      Out.ar(0, IFFT(fft).dup)
+    }
+  }
+
+  *serverOptions{
+    ServerOptions.new
+      .numOutputBusChannels_(inputFile.numChannels)
+      .maxSynthDefs_(100000)
+      .numInputBusChannels_(inputFile.numChannels)
+  }
+
+  *synthArgs{
+    ^[\dustFreq, 12]
+  }
+
+  /* ------------------ */
+  /* Private methods    */
+  /* ------------------ */
+  *prInit {
     // Command line arguments
     args = thisProcess.argv;
 
@@ -28,26 +52,6 @@ ReaperNRT {
       });
     }
 
-  }
-
-  *synthFunc{
-    ^{|dustFreq=10|
-      var in = SoundIn.ar([0]),
-      fft = FFT(LocalBuf(1024, 1), in);
-      fft = PV_MagFreeze(fft, ToggleFF.kr(Dust.kr(dustFreq)));
-      Out.ar(0, IFFT(fft).dup)
-    }
-  }
-
-  *serverOptions{
-    ServerOptions.new
-      .numOutputBusChannels_(inputFile.numChannels)
-      .maxSynthDefs_(100000)
-      .numInputBusChannels_(inputFile.numChannels)
-  }
-
-  *synthArgs{
-    ^[\dustFreq, 12]
   }
 
   *prProcess{|pathName|
