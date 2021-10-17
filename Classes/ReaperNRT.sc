@@ -1,11 +1,7 @@
 ReaperNRT {
   classvar <args, <paths, <server, <outFileName, <inputFile;
 
-  *new {
-    ^super.new.prInit();
-  }
-
-  *synthFunc{
+  *synthFunc{|numChannels|
     ^{|dustFreq=10|
       var in = SoundIn.ar([0]),
       fft = FFT(LocalBuf(1024, 1), in);
@@ -14,11 +10,11 @@ ReaperNRT {
     }
   }
 
-  *serverOptions{
+  *serverOptions{|numChannels|
     ServerOptions.new
-      .numOutputBusChannels_(inputFile.numChannels)
+      .numOutputBusChannels_(numChannels)
       .maxSynthDefs_(100000)
-      .numInputBusChannels_(inputFile.numChannels)
+      .numInputBusChannels_(numChannels)
   }
 
   *synthArgs{
@@ -28,6 +24,11 @@ ReaperNRT {
   /* ------------------ */
   /* Private methods    */
   /* ------------------ */
+
+  *new {
+    ^super.new.prInit();
+  }
+
   *prInit {
     // Command line arguments
     args = thisProcess.argv;
@@ -61,7 +62,7 @@ ReaperNRT {
     inputFile = SoundFile.openRead(pathName.fullPath);
 	inputFile.close;  // doesn't need to stay open; we just need the stats
 
-    server = Server(\nrt, options: this.serverOptions());
+    server = Server(\nrt, options: this.serverOptions(inputFile.numChannels));
 
     // @TODO make unique
     outFileName = "%%_nrtprocessed.%".format(
@@ -70,7 +71,7 @@ ReaperNRT {
 
     score = Score([
       [0.0, ['/d_recv',
-      SynthDef(\soundprocessor, this.synthFunc()).asBytes
+      SynthDef(\soundprocessor, this.synthFunc(inputFile.numChannels)).asBytes
       ]],
       [0.0, Synth.basicNew(\soundprocessor, server).newMsg(args: this.synthArgs())]
       ]);
