@@ -1,0 +1,11 @@
+(
+  name: "reapernrt.quark",
+  summary: "Integrating SuperCollider Non-realtime processing in Reaper",
+  version: "0.001",
+  schelp: "ReaperNRT.quark.schelp",
+  dependencies: nil,
+  license: "GNU GPL v3.0",
+  copyright: "madskjeldgaard",
+  ext_dependency: nil,
+  url: "https://github.com/madskjeldgaard/reapernrt.quark"
+)
