@@ -11,7 +11,7 @@ ReaperNRT {
   }
 
   *serverOptions{|numChannels|
-    ServerOptions.new
+    ^ServerOptions.new
       .numOutputBusChannels_(numChannels)
       .maxSynthDefs_(100000)
       .numInputBusChannels_(numChannels)
@@ -26,7 +26,7 @@ ReaperNRT {
   /* ------------------ */
 
   *new {
-    ^super.new.prInit();
+    ^this.prInit();
   }
 
   *prInit {
