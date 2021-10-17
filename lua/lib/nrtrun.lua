@@ -1,6 +1,7 @@
 local M = {}
 local file_info = debug.getinfo(1,'S');
 local script_path = file_info.source:match[[^@?(.*[\/])[^\/]-$]]
+
 -- local utils = loadfile(script_path .. "utils.lua")()
 
 -- Debug print
@@ -130,6 +131,6 @@ function M.run(scfile)
 	M.DEBUG("Ran: " .. sc_command .. ".\n------Script output: " .. command_return)
 end
 
-M.run( script_path .. "../reaper-nrt.scd" )
+M.DEBUG("LOOADED")
 
 return M
