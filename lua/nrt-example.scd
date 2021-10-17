@@ -1,3 +1,3 @@
 (
-ReaperNRT.new;
+ReaperNRTExampleClass.run;
 )

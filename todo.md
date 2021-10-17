@@ -1,1 +1,2 @@
 - Make processed file name unique
+- Make SC Gui's for each process (including specs)

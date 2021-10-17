@@ -1,33 +1,34 @@
 ReaperNRT {
   classvar <args, <paths, <server, <outFileName, <inputFile;
 
+  classvar <>synthArgs;
+
+  // Run this to start the script
+  *run {|...args|
+    synthArgs = args;
+    ^this.prInit();
+  }
+
+  // Overwrite with your own synth func. Make sure it returns a function
   *synthFunc{|numChannels|
-    ^{|dustFreq=10|
-      var in = SoundIn.ar([0]),
-      fft = FFT(LocalBuf(1024, 1), in);
-      fft = PV_MagFreeze(fft, ToggleFF.kr(Dust.kr(dustFreq)));
-      Out.ar(0, IFFT(fft).dup)
+    "ReaperNRT should not be used directly. Inherit this class and implement synthFunc in the child class".warn;
+    ^{
+      var in = SoundIn.ar((0..numChannels-1)); Out.ar(0, LPF.ar(in))
     }
   }
 
+  // Overwrite with your own options
   *serverOptions{|numChannels|
+    "ReaperNRT should not be used directly. Inherit this class and implement serverOptions in the child class".warn;
     ^ServerOptions.new
       .numOutputBusChannels_(numChannels)
       .maxSynthDefs_(100000)
       .numInputBusChannels_(numChannels)
   }
 
-  *synthArgs{
-    ^[\dustFreq, 12]
-  }
-
   /* ------------------ */
   /* Private methods    */
   /* ------------------ */
-
-  *new {
-    ^this.prInit();
-  }
 
   *prInit {
     // Command line arguments
@@ -73,7 +74,7 @@ ReaperNRT {
       [0.0, ['/d_recv',
       SynthDef(\soundprocessor, this.synthFunc(inputFile.numChannels)).asBytes
       ]],
-      [0.0, Synth.basicNew(\soundprocessor, server).newMsg(args: this.synthArgs())]
+      [0.0, Synth.basicNew(\soundprocessor, server).newMsg(args: synthArgs)]
       ]);
 
     score.recordNRT(
@@ -94,6 +95,40 @@ ReaperNRT {
 
     server.remove;
 
+  }
+
+}
+
+ReaperNRTExampleClass : ReaperNRT {
+
+  *synthFunc{|numChannels|
+    ^{|t60=1, damp=0, size=1, modDepth=0.5, modFreq=0.01|
+      var in = SoundIn.ar((0..numChannels-1));
+      var sig = JPverb.ar(
+        in,
+        t60: t60,
+        damp: damp,
+        size: size,
+        earlyDiff: 0.707,
+        modDepth: modDepth,
+        modFreq: modFreq,
+        low: 1.0,
+        mid: 1.0,
+        high: 1.0,
+        lowcut: 500.0,
+        highcut: 2000.0
+      );
+
+      Out.ar(0, sig)
+    }
+  }
+
+  *serverOptions{|numChannels|
+    ^ServerOptions.new
+    .numOutputBusChannels_(numChannels)
+    .maxSynthDefs_(100000)
+    .memSize_(65536 * 4)
+    .numInputBusChannels_(numChannels)
   }
 
 }
