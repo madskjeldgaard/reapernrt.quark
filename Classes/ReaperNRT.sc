@@ -19,12 +19,21 @@ ReaperNRT {
 
   // Overwrite with your own options
   *serverOptions{|numChannels|
-    "ReaperNRT serverOptions not implemented in child class".error;
+    "ReaperNRT serverOptions not implemented in child class".warn;
+    ^ServerOptions.new
+      .numOutputBusChannels_(numChannels)
+      .memSize_(65536)
+      .numInputBusChannels_(numChannels)
+  }
+
+  *specs{
+    "ReaperNRT specs not implemented in child class".error;
     1.exit;
-    // ^ServerOptions.new
-    //   .numOutputBusChannels_(numChannels)
-    //   .maxSynthDefs_(100000)
-    //   .numInputBusChannels_(numChannels)
+    // ^(
+    //   cutoff: ControlSpec.new(
+    //     minval: 50.0,  maxval: 15500.0,  warp: \exp,  step: 0.0,  default: 500,  units: "hz"
+    //   )
+    // )
   }
 
   /* ------------------ */
@@ -41,11 +50,12 @@ ReaperNRT {
     var sliders;
     var specs = this.specs();
     var button;
+    var title;
 
     if(specs.isKindOf(Dictionary).not, {
       "%: No specs".format(this.class.name); 1.exit
     }, {
-      window = Window.new();
+      window = Window.new().background_(Color.white);
 
       window.onClose_({
         "%: User closed window. Aborting NRT process".format(this.class.name).error;
@@ -53,7 +63,7 @@ ReaperNRT {
       });
 
       button = Button.new(window)
-      .states_([["compose"]])
+      .states_([["compose", Color.black, Color.white]])
       .action_({
 
         // @TODO: This is dirty.
@@ -66,11 +76,12 @@ ReaperNRT {
 
       sliders = specs.collect{|spec, name|
         var slider;
-        var label = StaticText.new(window).string_(name);
-        var valueBox = NumberBox.new(window).value_(spec.default);
+        var label = StaticText.new(window, Rect.new(20, 100, 40, 20)).string_(name).font_(Font.default.bold_(true));
+        var valueBox = NumberBox.new(window, Rect.new(20, 100, 40, 20)).value_(spec.default);
         var unit = StaticText.new(window).string_(spec.units);
-        slider = Slider.new(window)
+        slider = Slider.new(window, Rect(20, 100, 100, 20))
         .orientation_(\horizontal)
+        .background_(Color.grey(0.98))
         .value_(spec.default)
         .action_({|obj|
           var mappedVal = spec.map(obj.value);
@@ -78,24 +89,16 @@ ReaperNRT {
           valueBox.value = mappedVal;
         });
 
-        HLayout.new(label, slider, valueBox, unit)
+        HLayout.new([label, s: 2], [slider, s: 3], [valueBox, s: 1], [unit, s: 1])
       }.asArray;
 
-      window.layout = VLayout(button, VLayout.new(*sliders));
+      title = StaticText.new(window).string_(this.name).font_(Font.default.bold_(true).size_(16));
+      window.layout = VLayout([title, s: 1], [button, s: 1], VLayout.new(*sliders));
 
+      // window.view.decorator = FlowLayout( window.view.bounds, 10@10, 20@5 );
       window.front;
 
     });
-  }
-
-  *specs{
-    "ReaperNRT specs not implemented in child class".error;
-    1.exit;
-    // ^(
-    //   cutoff: ControlSpec.new(
-    //     minval: 50.0,  maxval: 15500.0,  warp: \exp,  step: 0.0,  default: 500,  units: "hz"
-    //   )
-    // )
   }
 
   *libPath{
@@ -301,6 +304,8 @@ ReaperNRTJPVerb : ReaperNRT {
       ),
     )
   }
+
+  // This is optional, but a good idea to implement in the child class
   *serverOptions{|numChannels|
     ^ServerOptions.new
     .numOutputBusChannels_(numChannels)
