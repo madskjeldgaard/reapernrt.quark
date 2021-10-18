@@ -98,11 +98,30 @@ ReaperNRT {
     // )
   }
 
+  *libPath{
+    ^Main.packages.asDict['reapernrt.quark']
+  }
+
+  *getPath{
+    var resourcePath = Platform.userAppSupportDir +/+ "reapernrt";
+
+    PathName(resourcePath).isFolder.not.if{
+      "Resource path for % does not exist. Creating now: %\n.".format(resourcePath).warn;
+      File.mkdir(resourcePath);
+    };
+
+    ^resourcePath
+  }
+
+  *openOS{
+    this.getPath().openOS;
+  }
+
   *generateLuaScript{
-    var class = this.class;
+    var class = this.name;
     // @TODO Put this in user resources folder instead?
-    var luaFolder = Main.packages.asDict['reapernrt.quark'] +/+ "lua";
-    var scriptName = class.name.toLower;
+    var luaFolder = this.getPath();
+    var scriptName = this.name.toLower;
     var fileName = "nrt-%".format(scriptName);
 
     var lua_file_name = luaFolder +/+ fileName ++ ".lua";
@@ -126,11 +145,12 @@ ReaperNRT {
       local script_path = file_info.source:match[[^@?(.*[\/])[^\/]-$]]
 
       -- Add library folder to lua package path to allow requiring libraries
-      package.path = script_path .. \"/lib/?.lua;\" .. package.path
+      local library_path = \"%\"
+      package.path = library_path .. \"/lib/?.lua;\" .. package.path
       local nrtrun = require'nrtrun'
 
       -- Run script with file in same folder as this script. Replace with full path if otherwise
-      nrtrun.run( script_path .. \"%\" )".format(class, Date.getDate, fileName ++ ".scd"));
+      nrtrun.run( script_path  .. \"%\" )".format(class, Date.getDate, this.libPath() +/+ "lua", fileName ++ ".scd"));
 
       lua_file.close;
     }

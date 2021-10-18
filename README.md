@@ -18,3 +18,5 @@ To verify that `sclang` is executable, open up a terminal and run `which sclang`
 
 ## Usage
 
+### Gotchas
+- Make sure your SuperCollider class library can compile. If it cannot, Reaper will hang until you kill the sclang process externally.
