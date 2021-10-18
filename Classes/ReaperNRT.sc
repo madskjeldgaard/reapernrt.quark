@@ -83,7 +83,7 @@ ReaperNRT {
         slider = Slider.new(window, Rect(20, 100, 100, 20))
         .orientation_(\horizontal)
         .background_(Color.grey(0.98))
-        .value_(spec.default)
+        .value_(spec.unmap(spec.default))
         .action_({|obj|
           var mappedVal = spec.map(obj.value);
           argDict[name] = mappedVal;
