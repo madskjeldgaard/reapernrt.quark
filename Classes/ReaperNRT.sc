@@ -10,19 +10,21 @@ ReaperNRT {
 
     // Overwrite with your own synth func. Make sure it returns a function
   *synthFunc{|numChannels|
-    "ReaperNRT should not be used directly. Inherit this class and implement synthFunc in the child class".warn;
-    ^{|cutoff=1500|
-      var in = SoundIn.ar((0..numChannels-1)); Out.ar(0, LPF.ar(in, cutoff))
-    }
+    "ReaperNRT synthfunc not implemented in child class".error;
+    1.exit;
+    // ^{|cutoff=1500|
+    //   var in = SoundIn.ar((0..numChannels-1)); Out.ar(0, LPF.ar(in, cutoff))
+    // }
   }
 
   // Overwrite with your own options
   *serverOptions{|numChannels|
-    "ReaperNRT should not be used directly. Inherit this class and implement serverOptions in the child class".warn;
-    ^ServerOptions.new
-      .numOutputBusChannels_(numChannels)
-      .maxSynthDefs_(100000)
-      .numInputBusChannels_(numChannels)
+    "ReaperNRT serverOptions not implemented in child class".error;
+    1.exit;
+    // ^ServerOptions.new
+    //   .numOutputBusChannels_(numChannels)
+    //   .maxSynthDefs_(100000)
+    //   .numInputBusChannels_(numChannels)
   }
 
   /* ------------------ */
@@ -87,11 +89,13 @@ ReaperNRT {
   }
 
   *specs{
-    ^(
-      cutoff: ControlSpec.new(
-        minval: 50.0,  maxval: 15500.0,  warp: \exp,  step: 0.0,  default: 500,  units: "hz"
-      )
-    )
+    "ReaperNRT specs not implemented in child class".error;
+    1.exit;
+    // ^(
+    //   cutoff: ControlSpec.new(
+    //     minval: 50.0,  maxval: 15500.0,  warp: \exp,  step: 0.0,  default: 500,  units: "hz"
+    //   )
+    // )
   }
 
   *generateLuaScript{
@@ -180,7 +184,7 @@ ReaperNRT {
       opts = this.serverOptions(inputFile.numChannels);
 
       // Check opts
-      if(opts.isKindOf(ServerOptions).not, { "%: server options not valid.".format(this.name).error; 1.exit});
+      if(opts.isKindOf(ServerOptions).not or: {opts.isNil}, { "%: server options not valid.".format(this.name).error; 1.exit});
       server = Server(\nrt, options: opts);
 
       // @TODO make unique
@@ -191,7 +195,7 @@ ReaperNRT {
       synthfunc = this.synthFunc(inputFile.numChannels);
 
       // Check syntfunc
-      if(synthfunc.isKindOf(Function).not, { "%: synthFunc not valid.".format(this.name).error; 1.exit});
+      if(synthfunc.isKindOf(Function).not or: {synthfunc.isNil}, { "%: synthFunc not valid.".format(this.name).error; 1.exit});
 
       score = Score([
         [0.0, ['/d_recv',
