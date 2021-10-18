@@ -90,7 +90,7 @@ ReaperNRT {
           valueBox.value = mappedVal;
         });
 
-        HLayout.new([label, s: 2], [slider, s: 3], [valueBox, s: 1], [unit, s: 1])
+        HLayout.new([label, s: 2], [slider, s: 3], [valueBox, s: 1]/*, [unit, s: 1]*/)
       }.asArray;
 
       title = StaticText.new(window).string_(this.name).font_(Font.default.bold_(true).size_(16));
