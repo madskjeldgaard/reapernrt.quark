@@ -117,6 +117,12 @@ ReaperNRT {
     this.getPath().openOS;
   }
 
+  *installAll{
+    ReaperNRT.allSubclasses.do{ |sub|
+      sub.generateLuaScript();
+    }
+  }
+
   *generateLuaScript{
     var class = this.name;
     // @TODO Put this in user resources folder instead?
