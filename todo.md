@@ -1,3 +1,2 @@
-- Make SC Gui's for each process (including specs)
 - How to handle tails?
 - Make processed file name unique
