@@ -1,4 +1,4 @@
-- Make processed file name unique - do this in the lua file
 - How to handle tails?
 - test with multiple items
+- put server creation in exception handler
 - Write documentation on how to create your own ReaperNRT class

@@ -94,11 +94,15 @@ function M.get_files_info()
 	end
 end
 
+M.time_stamp = ""
+M.time_stamp = os.date("%d_%m_%Y_%H_%M_%S")
+
 function M.add_processed_files_as_takes()
+
 	for item_index=1,M.num_items_selected do
 
 		-- Add take
-		local processed_file_path = M.file_no_extension(M.items[item_index].full_path) .. "_nrtprocessed" .. M.file_extension(M.items[item_index].full_path)
+		local processed_file_path = M.file_no_extension(M.items[item_index].full_path) .. "_nrtprocessed_" ..  M.time_stamp .. M.file_extension(M.items[item_index].full_path)
 		M.processed_files[#M.processed_files+1] =  processed_file_path
 		-- local processed_file_path = "/home/mads/sounds/SamuraiCop.wav"
 		reaper.InsertMedia(processed_file_path, 3)
@@ -119,7 +123,8 @@ function M.run(scfile)
 		path = "\"" .. path .. "\""
 		M.paths_as_string = M.paths_as_string .. " " .. path
 	end
-	local sc_command ="sclang " .. scfile .. " " .. M.paths_as_string
+
+	local sc_command ="sclang " .. scfile .. " " .. M.time_stamp .. " " .. M.paths_as_string
 
 	-- Run sclang command
 	local command_return = M.cmdline(sc_command)

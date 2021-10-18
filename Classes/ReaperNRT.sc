@@ -3,6 +3,7 @@ ReaperNRT {
   classvar <sc_file, <lua_file;
   classvar cond;
   classvar argDict;
+  classvar <fileTimeStamp;
 
   /* ------------------ */
   /* Overwriteable methods*/
@@ -174,6 +175,12 @@ ReaperNRT {
     // Command line arguments
     args = thisProcess.argv;
 
+    fileTimeStamp = args[0];
+
+    "Timestamp: %".format(fileTimeStamp).postln;
+
+    args = args[1..];
+
     // Paths of sound files to be processed
     paths = args.collect{|argument|
       PathName.new(argument.asString)
@@ -217,8 +224,8 @@ ReaperNRT {
       server = Server(\nrt, options: opts);
 
       // @TODO make unique
-      outFileName = "%%_nrtprocessed.%".format(
-        pathName.pathOnly, pathName.fileNameWithoutExtension, pathName.extension
+      outFileName = "%%_nrtprocessed_%.%".format(
+        pathName.pathOnly, pathName.fileNameWithoutExtension, fileTimeStamp, pathName.extension
       ).standardizePath;
 
       synthfunc = this.synthFunc(inputFile.numChannels);
