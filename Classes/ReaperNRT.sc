@@ -231,7 +231,8 @@ ReaperNRT {
 
 }
 
-ReaperNRTExampleClass : ReaperNRT {
+// This is an example of using the ReaperNRT class:
+ReaperNRTJPVerb : ReaperNRT {
 
   *synthFunc{|numChannels|
     ^{|t60=1, damp=0, size=1, modDepth=0.5, modFreq=0.01|
@@ -255,6 +256,25 @@ ReaperNRTExampleClass : ReaperNRT {
     }
   }
 
+  *specs{
+    ^(
+      t60: ControlSpec.new(
+        minval: 0.1,  maxval: 60.0,  warp: \exp,  step: 0.0,  default: 1,  units: "seconds"
+      ),
+      damp: ControlSpec.new(
+        minval: 0.0,  maxval: 1.0,  warp: \lin,  step: 0.0,  default: 0.1,  units: ""
+      ),
+      size: ControlSpec.new(
+        minval: 0.5,  maxval: 5,  warp: \exp,  step: 0.0,  default: 1,  units: "size"
+      ),
+      modDepth: ControlSpec.new(
+        minval: 0.0,  maxval: 1.0,  warp: \lin,  step: 0.0,  default: 0.5,  units: ""
+      ),
+      modFreq: ControlSpec.new(
+        minval: 0.00001,  maxval: 10.0,  warp: \exp,  step: 0.0,  default: 0.01,  units: "hz"
+      ),
+    )
+  }
   *serverOptions{|numChannels|
     ^ServerOptions.new
     .numOutputBusChannels_(numChannels)

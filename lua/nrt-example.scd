@@ -1,3 +1,3 @@
 (
-ReaperNRT.run;
+ReaperNRTJPVerb.run;
 )
